@@ -1,5 +1,6 @@
 ## About
 Everything goes digital these days, and so does money. Today, most people have credit cards, which save us time, energy and nerves. From not having to carry a wallet full of cash to consumer protection, cards make our lives easier in many ways. In this project, you will develop a simple banking system with database.
+
 ## Learning outcomes
 In this project, you will find out how the banking system works and learn about SQL. We'll also see how Luhn algorithm can help us avoid mistakes when entering the card number. As an overall result, you'll get new experience in Java.
    
@@ -30,40 +31,24 @@ https://hyperskill.org/projects/93
     * Total length 4 digits (0-9)
 * Has Balance
     * Initially hard coded to 0
-    
-### Class: Customer
-* May be logged in to account
-* Can create account
-* Can log into account
-    * Must enter Account Number
-    * Must enter PIN Code
-    * Can get balance
-    * Can log out
-    * Can exit system
-* Can exit system
 
 ### Class: Bank
 * Has many Accounts
-* Can receive login attempts
-    * Must validate login requests
-    * Returns Account if valid login
-    * Returns Error message if invalid login
+* Can create Accounts
+* Can return Account by account number
     
 ### Class: Main
-* Create Bank
-* Create Customer
+* Creates a Bank
 * Prompts user to select an option
-    * If Customer not logged in to Account:
+    * If user is not logged in:
         * 1- Create an account
         * 2- Log into account
         * 0- Exit
-    * If Customer logged in to Account:
+    * If user is logged in:
         * 1- Balance
         * 2- Log out
         * 0- Exit
-* Receives, validates, and triggers Customer actions based on selected option
-
-    
+* Receives user input, validates, triggers actions, and prints messages.
 
 ## Stages
 

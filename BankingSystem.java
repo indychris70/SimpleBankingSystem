@@ -8,8 +8,8 @@ public class BankingSystem {
     private String inputtedPin;
     private boolean exitSystem = false;
 
-    BankingSystem() {
-        this.bank = new Bank();
+    BankingSystem(String db) {
+        this.bank = new Bank(db);
     }
 
     public void welcomeMenu() {

@@ -57,3 +57,6 @@ Link: https://hyperskill.org/projects/93/stages/515/implement
 
 ### Stage #2: Luhn Algorithm
 Link: https://hyperskill.org/projects/93/stages/516/implement
+
+### Stage #3: I'm so lite
+Link: https://hyperskill.org/projects/93/stages/517/implement

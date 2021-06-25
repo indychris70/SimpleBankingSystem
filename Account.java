@@ -4,11 +4,12 @@ public class Account {
 
     private final String number;
     private final String pin;
-    private long balance = 0;
+    private long balance;
 
-    Account(String cardNumber, String pin) {
+    Account(String cardNumber, String pin, long balance) {
         this.number = cardNumber;
         this.pin = pin;
+        this.balance = balance;
     }
 
     public String getNumber() {

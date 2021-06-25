@@ -1,17 +1,15 @@
 package banking;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class Bank {
-
-    private final List<Account> accounts;
-    private static int initialAccountNumber = 100000000;
+    private static final int startingBalance = 0;
     private static final LuhnHelper luhnHelper = new LuhnHelper();
+    private final DbHelper dbHelper;
 
-    Bank() {
-        accounts = new ArrayList<>();
+    Bank(String db) {
+        this.dbHelper = new DbHelper(db);
+        this.dbHelper.update(QueryBuilder.CREATE_CARD_TABLE.build());
     }
 
     public Account createAccount() {
@@ -23,8 +21,8 @@ public class Bank {
             String checkDigit = luhnHelper.calculateCheckDigit(baseCardNumber);
             String cardNumber = baseCardNumber + checkDigit;
             String pin = generatePIN();
-            Account account = new Account(cardNumber, pin);
-            accounts.add(account);
+            Account account = new Account(cardNumber, pin, startingBalance);
+            this.dbHelper.update(QueryBuilder.INSERT_CARD.build(cardNumber, pin, Integer.toString(startingBalance)));
             return account;
         } catch (Exception e) {
             Messages.EXCEPTION.print(e.toString());
@@ -34,17 +32,13 @@ public class Bank {
 
     public Account getAccountByNumber(String accountNumber) {
         if (luhnHelper.isValid(accountNumber)) {
-            for (Account account : accounts) {
-                if (account.getNumber().equals(accountNumber)) {
-                    return account;
-                }
-            }
+            return dbHelper.getAccount(QueryBuilder.SELECT_CARD_BY_NUMBER.build(accountNumber));
         }
         return null;
     }
 
     private String generateAccountNumber() {
-        return Integer.toString(initialAccountNumber++);
+        return Long.toString(System.nanoTime()).substring(7);
     }
 
     private String generatePIN() {

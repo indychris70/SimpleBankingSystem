@@ -4,12 +4,11 @@ import java.util.Random;
 
 public class Bank {
     private static final int startingBalance = 0;
-    private static final LuhnHelper luhnHelper = new LuhnHelper();
     private final DbHelper dbHelper;
 
-    Bank(String db) {
-        this.dbHelper = new DbHelper(db);
-        this.dbHelper.update(QueryBuilder.CREATE_CARD_TABLE.build());
+    Bank() {
+        this.dbHelper = new DbHelper(BankingSystem.getDb());
+        this.dbHelper.createCardTable();
     }
 
     public Account createAccount() {
@@ -18,11 +17,11 @@ public class Bank {
             String majorIndustryIdentifier = "4";
             String bankIdentificationNumber = majorIndustryIdentifier + "00000";
             String baseCardNumber = bankIdentificationNumber + accountNumber;
-            String checkDigit = luhnHelper.calculateCheckDigit(baseCardNumber);
+            String checkDigit = LuhnHelper.calculateCheckDigit(baseCardNumber);
             String cardNumber = baseCardNumber + checkDigit;
             String pin = generatePIN();
             Account account = new Account(cardNumber, pin, startingBalance);
-            this.dbHelper.update(QueryBuilder.INSERT_CARD.build(cardNumber, pin, Integer.toString(startingBalance)));
+            this.dbHelper.addCard(cardNumber, pin, startingBalance);
             return account;
         } catch (Exception e) {
             Messages.EXCEPTION.print(e.toString());
@@ -30,9 +29,39 @@ public class Bank {
         return null;
     }
 
+    public void closeAccount(Account account) {
+        this.dbHelper.closeAccount(account);
+    }
+
+    public boolean isValidTransfer(Account fromAccount, String toAccountNumber) {
+        Account toAccount = getAccountByNumber(toAccountNumber);
+        boolean isValid = true;
+        if (fromAccount.getNumber().equals(toAccountNumber)) {
+            Messages.ERROR_TRANSFER_TO_SAME_ACCOUNT.print();
+            isValid = false;
+        } else if (!LuhnHelper.isValid(toAccountNumber)) {
+            Messages.ERROR_TRANSFER_CARD_NUMBER_NOT_VALID.print();
+            isValid = false;
+        } else if (toAccount == null) {
+            Messages.ERROR_TRANSFER_CARD_NOT_FOUND.print();
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    public void transferFunds(Account fromAccount, String toAccountNumber, long amount) {
+        Account toAccount = getAccountByNumber(toAccountNumber);
+        boolean transferSuccess = dbHelper.transferFunds(fromAccount, toAccount, amount);
+        if (transferSuccess) {
+            fromAccount.setBalance(fromAccount.getBalance() - amount);
+            toAccount.setBalance(toAccount.getBalance() + amount);
+        }
+        Messages.CONFIRM_TRANSFER.print(transferSuccess ? "Successful" : "Failed");
+    }
+
     public Account getAccountByNumber(String accountNumber) {
-        if (luhnHelper.isValid(accountNumber)) {
-            return dbHelper.getAccount(QueryBuilder.SELECT_CARD_BY_NUMBER.build(accountNumber));
+        if (LuhnHelper.isValid(accountNumber)) {
+            return dbHelper.selectCardByNumber(accountNumber);
         }
         return null;
     }

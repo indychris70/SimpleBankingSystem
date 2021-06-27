@@ -7,9 +7,18 @@ public class BankingSystem {
     private Account loggedInAccount;
     private String inputtedPin;
     private boolean exitSystem = false;
+    private static String db;
 
-    BankingSystem(String db) {
-        this.bank = new Bank(db);
+    BankingSystem() {
+        this.bank = new Bank();
+    }
+
+    public static String getDb() {
+        return db;
+    }
+
+    public static void setDb(String db) {
+        BankingSystem.db = db;
     }
 
     public void welcomeMenu() {
@@ -74,6 +83,15 @@ public class BankingSystem {
                     getBalance();
                     break;
                 case "2":
+                    addIncome();
+                    break;
+                case "3":
+                    doTransfer();
+                    break;
+                case "4":
+                    closeAccount();
+                    break optionLoop;
+                case "5":
                     logOut();
                     break optionLoop;
                 case "0":
@@ -88,6 +106,34 @@ public class BankingSystem {
     private void getBalance() {
         long balance = loggedInAccount.getBalance();
         Messages.BALANCE_OPTION.print(Long.toString(balance));
+    }
+
+    private void addIncome() {
+        Messages.ADD_INCOME.print();
+        String income = getInput();
+        loggedInAccount.addToBalance(Long.parseLong(income));
+        Messages.CONFIRM_INCOME_ADDED.print();
+    }
+
+    private void doTransfer() {
+        Messages.PROMPT_ENTER_TRANSFER_CARD_NUMBER.print();
+        String transferAccountNumber = getInput();
+        if (bank.isValidTransfer(loggedInAccount, transferAccountNumber)) {
+            Messages.PROMPT_ENTER_TRANSFER_AMOUNT.print();
+            String transferAmount = getInput();
+            if (Long.parseLong(transferAmount) > loggedInAccount.getBalance()) {
+                Messages.INSUFFICIENT_FUNDS.print();
+            } else {
+                bank.transferFunds(loggedInAccount, transferAccountNumber, Long.parseLong(transferAmount));
+                Messages.CONFIRM_TRANSFER.print("Successful");
+            }
+        }
+    }
+
+    private void closeAccount() {
+        bank.closeAccount(loggedInAccount);
+        Messages.CONFIRM_ACCOUNT_CLOSED.print();
+        loggedInAccount = null;
     }
 
     private void logOut() {

@@ -24,6 +24,19 @@ public class Account {
         return balance;
     }
 
+    public void setBalance(long balance) {
+        this.balance = balance;
+    }
+
+    public void addToBalance(long amount) {
+        int result = new DbHelper(BankingSystem.getDb()).updateBalance(this, balance + amount);
+        if (result == 1) {
+            balance += amount;
+        } else {
+            Messages.FAILED_TO_ADD_INCOME.print();
+        }
+    }
+
     public boolean isValidPIN(String pin) {
         return this.pin.equals(pin);
     }

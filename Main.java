@@ -2,8 +2,8 @@ package banking;
 
 public class Main {
     public static void main(String[] args) {
-        String db = getDbFromArgs(args);
-        BankingSystem system = new BankingSystem(db);
+        BankingSystem.setDb(getDbFromArgs(args));
+        BankingSystem system = new BankingSystem();
         system.welcomeMenu();
     }
 

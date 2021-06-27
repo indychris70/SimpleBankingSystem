@@ -1,15 +1,13 @@
 package banking;
 
-public class LuhnHelper {
+abstract class LuhnHelper {
 
-    LuhnHelper() {}
-
-    public boolean isValid(String value) {
+    public static boolean isValid(String value) {
         long number = Long.parseLong(value);
         return calculateControlNumber(number) % 10 == 0;
     }
 
-    public String calculateCheckDigit(String value) {
+    public static String calculateCheckDigit(String value) {
         long number = Long.parseLong(value);
         long controlNumber = calculateControlNumber(number);
         if (controlNumber % 10L == 0L) {
@@ -19,7 +17,7 @@ public class LuhnHelper {
         }
     }
 
-    private long calculateControlNumber(long num) {
+    private static long calculateControlNumber(long num) {
         long controlNumber = 0L;
         long currentDigit;
         String value = Long.toString(num);
